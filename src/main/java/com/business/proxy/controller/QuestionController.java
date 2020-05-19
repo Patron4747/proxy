@@ -1,6 +1,6 @@
 package com.business.proxy.controller;
 
-import com.business.proxy.clients.StorageServiceClient;
+import com.business.proxy.clients.FeignStorageServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class QuestionController {
 
     @Autowired
-    private StorageServiceClient storageServiceClient;
+    private FeignStorageServiceClient feignStorageServiceClient;
 
     @GetMapping("/getAllQuestions")
     public List<Map<String, String>> getAllQuestions() {
         String test = "TEST";
         System.out.println(test);
-        return storageServiceClient.getAllQuestions();
+        return feignStorageServiceClient.getAllQuestions();
     }
 }
