@@ -1,0 +1,27 @@
+---
+
+#Dev Profile
+
+server:
+  port: 8012
+
+spring:
+  profiles: dev
+  application:
+    name: proxy
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+
+zuul:
+  host:
+    connect-timeout-millis: 5000000
+    socket-timeout-millis: 5000000
+  ignored-services: '*'
+  routes:
+    proxy:
+      path: /resource/**
+      serviceId: proxy
+      stripPrefix: true
