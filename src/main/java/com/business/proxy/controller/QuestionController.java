@@ -21,9 +21,7 @@ public class QuestionController {
     private FeignStorageServiceClient feignStorageServiceClient;
 
     @GetMapping("/getAllQuestions")
-    public List<Map<String, String>> getAllQuestions() {
-        String test = "TEST";
-        System.out.println(test);
+    public List<Map<String, Object>> getAllQuestions() {
         return feignStorageServiceClient.getAllQuestions();
     }
 }

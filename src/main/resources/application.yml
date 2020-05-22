@@ -3,7 +3,7 @@
 #Dev Profile
 
 server:
-  port: 8012
+  port: 8013
 
 spring:
   profiles: dev

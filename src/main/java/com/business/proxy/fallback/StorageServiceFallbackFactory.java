@@ -21,11 +21,16 @@ public class StorageServiceFallbackFactory implements FallbackFactory<FeignStora
     public FeignStorageServiceClient create(Throwable throwable) {
         return new FeignStorageServiceClient() {
             @Override
-            public List<Map<String, String>> getAllQuestions() {
-                Map<String, String> errorResponse = new HashMap<>();
+            public List<Map<String, Object>> getAllQuestions() {
+                Map<String, Object> errorResponse = new HashMap<>();
                 errorResponse.put("code", "ERROR");
                 errorResponse.put("cause", throwable.getMessage());
                 return Arrays.asList(errorResponse);
+            }
+
+            @Override
+            public byte[] getMinioFile(String bucket, String path) {
+                return null;
             }
         };
     }

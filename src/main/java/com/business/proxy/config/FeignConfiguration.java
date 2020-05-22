@@ -1,7 +1,6 @@
 package com.business.proxy.config;
 
-import feign.*;
-import feign.auth.BasicAuthRequestInterceptor;
+import feign.Logger;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -12,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 public class FeignConfiguration {
 
     @Bean
-    public Logger.Level configureLogLevel(){
-        return  Logger.Level.FULL;
+    public Logger.Level configureLogLevel() {
+        return Logger.Level.FULL;
     }
 
 //    @Bean     Таймаут конекшена и ответа!
