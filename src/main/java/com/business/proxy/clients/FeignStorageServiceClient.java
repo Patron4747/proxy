@@ -4,6 +4,7 @@ import com.business.proxy.config.FeignConfiguration;
 import com.business.proxy.fallback.StorageServiceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -20,6 +21,12 @@ public interface FeignStorageServiceClient {
 
     @GetMapping("/question/getAllQuestions")
     public List<Map<String, Object>> getAllQuestions();
+
+    @GetMapping("/question/getQuestion")
+    public Map<String, Object> getQuestion(@RequestParam("id") String id);
+
+    @GetMapping("/question/{questionId}/getAnswersTree")
+    public List<Map<String, Object>> getAllAnswers(@PathVariable("questionId") String questionId);
 
     @GetMapping(value = "/minio/getFile")
     public byte[] getMinioFile(@RequestParam(name = "bucket") String bucket,

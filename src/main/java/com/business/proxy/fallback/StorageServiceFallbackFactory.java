@@ -29,6 +29,16 @@ public class StorageServiceFallbackFactory implements FallbackFactory<FeignStora
             }
 
             @Override
+            public Map<String, Object> getQuestion(String id) {
+                return null;
+            }
+
+            @Override
+            public List<Map<String, Object>> getAllAnswers(String questionId) {
+                return null;
+            }
+
+            @Override
             public byte[] getMinioFile(String bucket, String path) {
                 return null;
             }

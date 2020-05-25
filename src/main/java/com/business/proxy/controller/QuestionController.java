@@ -2,9 +2,7 @@ package com.business.proxy.controller;
 
 import com.business.proxy.clients.FeignStorageServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -23,5 +21,15 @@ public class QuestionController {
     @GetMapping("/getAllQuestions")
     public List<Map<String, Object>> getAllQuestions() {
         return feignStorageServiceClient.getAllQuestions();
+    }
+
+    @GetMapping("/getQuestion")
+    public Map<String, Object> getQuestion(@RequestParam("id") String id) {
+        return feignStorageServiceClient.getQuestion(id);
+    }
+
+    @GetMapping("/{questionId}/getAnswersTree")
+    public List<Map<String, Object>> getAllAnswers(@PathVariable("questionId") String questionId) {
+        return feignStorageServiceClient.getAllAnswers(questionId);
     }
 }
