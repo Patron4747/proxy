@@ -9,6 +9,22 @@ spring:
   profiles: dev
   application:
     name: proxy
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/proxy
+    username: postgres
+    password: 58742
 
 eureka:
   client:
@@ -25,3 +41,12 @@ zuul:
       path: /resource/**
       serviceId: proxy
       stripPrefix: true
+    storage:
+      path: /storage/**
+      serviceId: storage
+      stripPrefix: true
+
+jwt:
+  security:
+    key: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
+    expiration: 2
