@@ -20,7 +20,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public User saveUser(@RequestBody User user) {
-        return userService.save(user);
+    public User signUpUser(@RequestBody User user) {
+        return userService.signUp(user);
     }
 }

@@ -1,9 +1,13 @@
 package com.business.proxy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: mmustafin@context-it.ru
@@ -11,52 +15,27 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+@Data
+public class User extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2183145813218412318L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @NaturalId
+    @Column(name = "name")
     private String name;
+    @Column(name = "first_name")
+    private String firstNme;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "email")
     private String email;
+    @Column(name = "password")
     private String password;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @Column(name = "roles")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    @JsonIgnore
+    private List<Role> roles = new ArrayList<>();
 }
