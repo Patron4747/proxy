@@ -1,5 +1,6 @@
 package com.business.proxy.utils;
 
+import com.business.proxy.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -111,9 +112,9 @@ public class JwtTokenUtil implements Serializable {
 //        return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
 //    }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        claims.put(CLAIM_KEY_USERNAME, user.getName());
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims);
     }
@@ -121,7 +122,7 @@ public class JwtTokenUtil implements Serializable {
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
-                //.setExpiration(generateExpirationDate())
+                .setExpiration(generateExpirationDate())
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
@@ -146,11 +147,8 @@ public class JwtTokenUtil implements Serializable {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
-        final Date created = getCreatedDateFromToken(token);
+//        final Date created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
-        return (
-                username.equals(userDetails.getUsername())
-//                        && !isTokenExpired(token)
-        );
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

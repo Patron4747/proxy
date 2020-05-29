@@ -43,8 +43,7 @@ public class AuthenticationController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final User user = userService.findOne(loginUser.getName());
-        org.springframework.security.core.userdetails.User sec = new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), new ArrayList<>());
-        final String token = jwtTokenUtil.generateToken(sec);
+        final String token = jwtTokenUtil.generateToken(user);
         return ResponseEntity.ok(token);
     }
 }

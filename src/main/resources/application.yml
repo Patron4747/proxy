@@ -49,4 +49,4 @@ zuul:
 jwt:
   security:
     key: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
-    expiration: 2
+    expiration: 3600
