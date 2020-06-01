@@ -1,5 +1,6 @@
 package com.business.proxy.controller;
 
+import com.business.proxy.dto.UserDto;
 import com.business.proxy.model.User;
 import com.business.proxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public User signUpUser(@RequestBody User user) {
-        return userService.signUp(user);
+    public UserDto signUpUser(@RequestBody UserDto userDto) {
+        User savedUser = userService.signUp(userDto);
+        return UserDto.fromUser(savedUser);
     }
 }

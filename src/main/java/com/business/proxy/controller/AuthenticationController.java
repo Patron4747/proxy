@@ -1,5 +1,7 @@
 package com.business.proxy.controller;
 
+import com.business.proxy.dto.AuthTokenDto;
+import com.business.proxy.dto.AuthenticationRequestDto;
 import com.business.proxy.model.User;
 import com.business.proxy.service.UserService;
 import com.business.proxy.utils.JwtTokenUtil;
@@ -14,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
 
 /**
  * @author: mmustafin@context-it.ru
@@ -33,17 +33,15 @@ public class AuthenticationController {
     private UserService userService;
 
     @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
-    public ResponseEntity<?> generateToken(@RequestBody User loginUser)
-            throws AuthenticationException {
+    public ResponseEntity<?> generateToken(@RequestBody AuthenticationRequestDto requestDto) throws AuthenticationException {
         final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginUser.getName(),
-                        loginUser.getPassword()
-                )
-        );
+                new UsernamePasswordAuthenticationToken(requestDto.getName(), requestDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final User user = userService.findOne(loginUser.getName());
+        final User user = userService.findOne(requestDto.getName());
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
         final String token = jwtTokenUtil.generateToken(user);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new AuthTokenDto(user.getName(), token));
     }
 }

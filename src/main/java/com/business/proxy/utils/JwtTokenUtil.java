@@ -1,5 +1,6 @@
 package com.business.proxy.utils;
 
+import com.business.proxy.model.Role;
 import com.business.proxy.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,9 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: mmustafin@context-it.ru
@@ -25,6 +24,7 @@ public class JwtTokenUtil implements Serializable {
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_AUDIENCE = "audience";
     private static final String CLAIM_KEY_CREATED = "created";
+    private static final String CLAIM_KEY_ROLES = "roles";
 
 //    private static final String AUDIENCE_UNKNOWN = "unknown";
 //    private static final String AUDIENCE_WEB = "web";
@@ -36,6 +36,42 @@ public class JwtTokenUtil implements Serializable {
 
     @Value("${jwt.security.expiration}")
     private Long expiration;
+
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME, user.getName());
+        claims.put(CLAIM_KEY_CREATED, new Date());
+        claims.put(CLAIM_KEY_ROLES, getRoleNames(user.getRoles()));
+        return generateToken(claims);
+    }
+
+    public String refreshToken(String token) {
+        String refreshedToken;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            claims.put(CLAIM_KEY_CREATED, new Date());
+            refreshedToken = generateToken(claims);
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
+    }
+
+    private String generateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(generateExpirationDate())
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+//        final Date created = getCreatedDateFromToken(token);
+        //final Date expiration = getExpirationDateFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -103,6 +139,14 @@ public class JwtTokenUtil implements Serializable {
         return expiration.before(new Date());
     }
 
+    private List<String> getRoleNames(List<Role> roles) {
+        List<String> result = new ArrayList<>();
+        roles.forEach(role -> {
+            result.add(role.getName());
+        });
+        return result;
+    }
+
 //    private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
 //        return (lastPasswordReset != null && created.before(lastPasswordReset));
 //    }
@@ -112,43 +156,9 @@ public class JwtTokenUtil implements Serializable {
 //        return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
 //    }
 
-    public String generateToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, user.getName());
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
-    }
-
-    private String generateToken(Map<String, Object> claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
-    }
-
 //    public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
 //        final Date created = getCreatedDateFromToken(token);
 //        return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset)
 //                && (!isTokenExpired(token) || ignoreTokenExpiration(token));
 //    }
-
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            claims.put(CLAIM_KEY_CREATED, new Date());
-            refreshedToken = generateToken(claims);
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-//        final Date created = getCreatedDateFromToken(token);
-        //final Date expiration = getExpirationDateFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
 }

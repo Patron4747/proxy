@@ -1,10 +1,13 @@
 package com.business.proxy.service;
 
+import com.business.proxy.dto.UserDto;
 import com.business.proxy.model.Role;
 import com.business.proxy.model.Status;
 import com.business.proxy.model.User;
 import com.business.proxy.repository.RoleRepository;
 import com.business.proxy.repository.UserRepository;
+import com.business.proxy.security.JwtUser;
+import com.business.proxy.security.JwtUserFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,15 +33,13 @@ public class UserService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public User signUp(User user) {
+    public User signUp(UserDto userDto) {
         Role role = roleRepository.findByName("USER");
 
-        User newUser = new User();
+        User newUser = userDto.toUser();
         newUser.getRoles().add(role);
         newUser.setStatus(Status.ACTIVE);
-        newUser.setName(user.getName());
-        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setEmail(user.getEmail());
+        newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         log.info("IN signUp - new user: {} successfully created", newUser.getName());
 
@@ -88,7 +88,8 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-        return new org.springframework.security.core.userdetails.User(
-                user.getName(), user.getPassword(), new ArrayList<>());
+        JwtUser jwtUser = JwtUserFactory.create(user);
+        log.info("IN loadUserByUsername - user with username: {} successfully created", name);
+        return jwtUser;
     }
 }
